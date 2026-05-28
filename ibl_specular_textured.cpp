@@ -44,6 +44,7 @@ bool isLeftClickPressed = false;
 bool isRightClickPressed = false;
 float lastMouseX = 400.0f;
 float mouseSensitivity = 0.2f;
+bool isAltPressed = false;
 
 int main()
 {
@@ -460,6 +461,9 @@ void processInput(GLFWwindow *window)
     // Track mouse button states
     isLeftClickPressed = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
     isRightClickPressed = (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
+
+    isAltPressed = (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS ||
+        glfwGetKey(window, GLFW_KEY_RIGHT_ALT) == GLFW_PRESS);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -492,22 +496,34 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     lastX = xpos;
     lastY = ypos;
 
-    // Route input data to the intended interaction target
-    if (isLeftClickPressed)
+    // FIX: New routing rules based on Alt state
+    if (isAltPressed)
     {
-        // Rotate environment map around Y axis
-        envRotationY += xoffset * mouseSensitivity;
-    }
-    else if (isRightClickPressed)
-    {
-        // Rotate directional light around Y axis
+        // Holding Alt + moving mouse rotates the directional light around Y axis
         lightRotationY += xoffset * mouseSensitivity;
     }
     else
     {
-        // Only look around with standard camera if the user is not manipulating the scene objects
-        camera.ProcessMouseMovement(xoffset, yoffset);
+        // Normal mouse movement (no Alt) rotates the skybox / environment map around Y axis
+        envRotationY += xoffset * mouseSensitivity;
     }
+
+    //// Route input data to the intended interaction target
+    //if (isLeftClickPressed)
+    //{
+    //    // Rotate environment map around Y axis
+    //    envRotationY += xoffset * mouseSensitivity;
+    //}
+    //else if (isRightClickPressed)
+    //{
+    //    // Rotate directional light around Y axis
+    //    lightRotationY += xoffset * mouseSensitivity;
+    //}
+    //else
+    //{
+    //    // Only look around with standard camera if the user is not manipulating the scene objects
+    //    camera.ProcessMouseMovement(xoffset, yoffset);
+    //}
 
 }
 
